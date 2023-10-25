@@ -37,22 +37,22 @@ bsd.am  blog          Active   12   blog.antranigv.am                           
 bsd.am  citizen       Stopped
 bsd.am  comments      Stopped
 bsd.am  feedland      Stopped
-bsd.am  git           Active   2    git.bsd.am                                   37.252.78.251/24  37.252.78.1
-bsd.am  huginn0       Active   8    huginn0.bsd.am                               192.168.10.34/24  192.168.10.1
-bsd.am  ifconfig      Active   7    ifconfig.bsd.am                              192.168.10.33/24  192.168.10.1
+bsd.am  git           Active   2    git.bsd.am                          37.252.78.251/24  37.252.78.1
+bsd.am  huginn0       Active   8    huginn0.bsd.am                      192.168.10.34/24  192.168.10.1
+bsd.am  ifconfig      Active   7    ifconfig.bsd.am                     192.168.10.33/24  192.168.10.1
 bsd.am  lists         Stopped
-bsd.am  lucy          Active   10   lucy.vartanian.am                            192.168.10.37/24  192.168.10.1
+bsd.am  lucy          Active   10   lucy.vartanian.am                   192.168.10.37/24  192.168.10.1
 bsd.am  matterbridge  Stopped
-bsd.am  mysql         Active   9    mysql.antranigv.am                           192.168.10.50/24  192.168.10.1
-bsd.am  newsletter    Active   14   newsletter.bsd.am                            192.168.10.65/24  192.168.10.1
-bsd.am  oragir        Active   3    oragir.am                                    192.168.10.30/24  192.168.10.1
-bsd.am  psql          Active   1    psql.pingvinashen.am                         192.168.10.3/24   192.168.10.1
-bsd.am  rss           Active   6    rss.bsd.am                                   192.168.10.5/24   192.168.10.1
-bsd.am  sarian        Active   15   sarian.am                                    192.168.10.53/24  192.168.10.1
-bsd.am  syuneci       Active   13   syuneci.am                                   192.168.10.60/24  192.168.10.1
+bsd.am  mysql         Active   9    mysql.antranigv.am                  192.168.10.50/24  192.168.10.1
+bsd.am  newsletter    Active   14   newsletter.bsd.am                   192.168.10.65/24  192.168.10.1
+bsd.am  oragir        Active   3    oragir.am                           192.168.10.30/24  192.168.10.1
+bsd.am  psql          Active   1    psql.pingvinashen.am                192.168.10.3/24   192.168.10.1
+bsd.am  rss           Active   6    rss.bsd.am                          192.168.10.5/24   192.168.10.1
+bsd.am  sarian        Active   15   sarian.am                           192.168.10.53/24  192.168.10.1
+bsd.am  syuneci       Active   13   syuneci.am                          192.168.10.60/24  192.168.10.1
 bsd.am  test0         Stopped
-bsd.am  weblog        Active   11   weblog.antranigv.am                          192.168.10.52/24  192.168.10.1
-bsd.am  znc           Active   5    znc.bsd.am                                   37.252.78.252/24  37.252.78.1
+bsd.am  weblog        Active   11   weblog.antranigv.am                 192.168.10.52/24  192.168.10.1
+bsd.am  znc           Active   5    znc.bsd.am                          37.252.78.252/24  37.252.78.1
 mbp0    jellyfin0     Active   15   jellyfin0.mbp0.evn0.loc.freebsd.am  172.16.100.99/24  172.16.100.1
 mbp0    tm0           Active   12   tm0.evn0.freebsd.am                 172.16.100.90/24  172.16.100.1
 s0      artifacts0    Active   1    artifacts0.s0.loc.freebsd.am        172.16.70.10/24   172.16.70.1
