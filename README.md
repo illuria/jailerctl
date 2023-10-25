@@ -33,7 +33,7 @@ s0 ->
 
 antranigv@zvartnots:~ $ jailerctl list
 HOST    NAME          STATE    JID  HOSTNAME                                     IPv4              GW
-bsd.am  blog          Active   12   blog.antranigv.am                            192.168.10.42/24  192.168.10.1
+bsd.am  blog          Active   12   blog.antranigv.am                   192.168.10.42/24  192.168.10.1
 bsd.am  citizen       Stopped
 bsd.am  comments      Stopped
 bsd.am  feedland      Stopped
