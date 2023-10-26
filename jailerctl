@@ -2,7 +2,7 @@
 
 # set global variables
 PROGNAME=${0##*/}
-VERSION="0.1.1"
+VERSION="0.1.2"
 
 COLOUR_SET_R="\033[0;31m"
 COLOUR_SET_G="\033[0;32m"
@@ -40,7 +40,7 @@ help_tbd(){
 }
 
 remote_list(){
-  _remotes=$(ls ~/.jailerctl/remotes/)
+  _remotes=$(ls ~/.jailerctl/remotes/ 2>/dev/null)
   [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
   for remote in ${_remotes} ;
   do
@@ -97,7 +97,8 @@ remote_parse(){
 list_parse(){
   shift
   [ "$#" -eq 1 ] && list_do "$1" | sed -e '1s/^/HOST NAME STATE JID HOSTNAME IPv4 GW\n/'| column -t && exit 0
-  _remotes=$(ls ~/.jailerctl/remotes/)
+  _remotes=$(ls ~/.jailerctl/remotes/ 2>/dev/null)
+  [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
   for remote in ${_remotes} ;
   do
     list_do "$remote"
@@ -133,7 +134,8 @@ inspect_parse(){
   shift
   [ ! -z "$1" ] && inspect_do "$1" && exit 0
 
-  _remotes=$(ls ~/.jailerctl/remotes/)
+  _remotes=$(ls ~/.jailerctl/remotes/ 2>/dev/null)
+  [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
   for remote in ${_remotes} ;
   do
     printf "$remote ->\n"

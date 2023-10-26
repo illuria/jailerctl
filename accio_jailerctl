@@ -1,0 +1,69 @@
+#!/bin/sh
+
+# Global Variables
+COLOUR_SET_R="\033[0;31m"
+COLOUR_SET_G="\033[0;32m"
+COLOUR_SET_Y="\033[0;33m"
+COLOUR_SET_B="\033[0;34m"
+COLOUR_SET_M="\033[0;35m"
+COLOUR_SET_C="\033[0;36m"
+COLOUR_SET_W="\033[0;37m"
+COLOUR_END="\033[0m"
+
+JAILERCTL_VERSION="v0.1.2"
+INSTALL_PATH="${HOME}/.jailerctl"
+
+if [ -z "${BRANCH}" ];
+then
+  BRANCH=${JAILERCTL_VERSION}
+fi
+
+if [ -z "${LOCATION}" ];
+then
+  LOCATION="${INSTALL_PATH}"
+fi
+
+_url="https://raw.githubusercontent.com/illuria/jailerctl/${BRANCH}/jailerctl"
+_org="https://github.com/illuria"
+
+exit_err(){
+  printf "${COLOUR_END}\n"
+  exit 1
+}
+
+if which fetch >/dev/null 2>&1;
+then
+  _fetcher="fetch"
+elif which curl >/dev/null 2>&1;
+then
+  _fetcher="curl -sf -o"
+elif which wget >/dev/null 2>&1;
+then
+  _fetcher="wget -O"
+fi
+
+printf "${COLOUR_SET_B}Fetching and Installing "
+printf "${COLOUR_SET_G}jailerctl(1)...\n"
+printf " ${COLOUR_SET_M}Version  : ${COLOUR_SET_C}%s\n" "${BRANCH}"
+printf " ${COLOUR_SET_M}Fetcher  : ${COLOUR_SET_C}%s\n" "${_fetcher}"
+printf " ${COLOUR_SET_M}Location : ${COLOUR_SET_C}%s\n" "${LOCATION}"
+
+[ ! -d ${LOCATION}/bin ] && ( mkdir -p ${LOCATION}/bin || printf "${COLOUR_SET_R}mkdir failed :(\n" && exit_err )
+
+printf "${COLOUR_SET_B}Downloading : " \
+  && ( ${_fetcher} ${LOCATION}/bin/jailerctl ${_url} && printf "${COLOUR_SET_G}Done!\n" ) \
+  || ( printf "${COLOUR_SET_R}Failed :(\n" && exit_err )
+
+printf "${COLOUR_SET_B}Installing  : " \
+  && ( chmod +x ${LOCATION}/bin/jailerctl && printf "${COLOUR_SET_G}Done!\n" ) \
+  || ( printf "${COLOUR_SET_R}Failed :(\n" && exit_err )
+
+printf "${COLOUR_END}"
+
+echo "jailerctl is now installed!"
+echo ""
+echo "Getting Started : ${_org}/jailerctl/wiki/Getting-Started"
+echo "Running Jailer  : ${_org}/jailer"
+echo ""
+echo "please add ${LOCATION}/bin to your \$PATH"
+echo "export PATH=${LOCATION}/bin:\$PATH"
