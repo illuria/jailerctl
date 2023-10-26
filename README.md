@@ -2,6 +2,19 @@
 
 Jailerctl is a controller for [Jailer](http://jailer.dev) over SSH
 
+## Installation
+
+on Linux or macOS:
+```
+curl -s https://accio.jailer.dev/jailerctl | sh -s
+```
+
+on FreeBSD:
+```
+fetch -o - https://accio.jailer.dev/jailerctl | sh -s
+```
+
+
 For a basic idea on what it does and how it works please check the following output, until we write manual pages and add more features.
 
 ```
