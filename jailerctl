@@ -2,7 +2,7 @@
 
 # set global variables
 PROGNAME=${0##*/}
-VERSION="0.1.0"
+VERSION="0.1.1"
 
 COLOUR_SET_R="\033[0;31m"
 COLOUR_SET_G="\033[0;32m"
@@ -150,7 +150,7 @@ inspect_do(){
     && printf "Remote ${remoteName} doesn't exists...\n" \
     && exit 1
 
-  ssh -q -o ControlPersist=300 -o ControlMaster=yes -o ControlPath=/tmp/jailerctl.${remoteName}.ctl -t $(cat ~/.jailerctl/remotes/${remoteName} | cut -w -f 1) '/bin/sh -s' <<EOS
+  ssh -q -o ControlPersist=300 -o ControlMaster=yes -o ControlPath=/tmp/jailerctl.${remoteName}.ctl -t $(cat ~/.jailerctl/remotes/${remoteName} | cut -d ' ' -f 1) '/bin/sh -s' <<EOS
 printf "  Hostname   : "
 hostname
 
@@ -161,6 +161,7 @@ minutes=\$(expr \${sec} / 60 % 60)
 printf "  Uptime     : %sd %sh %sm\n" \${days} \${hours} \${minutes}
 
 printf "  OS Version : K: %s, R: %s, U: %s\n" \$(freebsd-version -kru)
+printf "  Jailer Vers: %s\n" \$(sudo jailer version | head -1)
 
 printf "  CPUs       : "
 sysctl -n hw.ncpu
