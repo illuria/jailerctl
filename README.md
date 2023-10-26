@@ -11,7 +11,7 @@ curl -s https://accio.jailer.dev/jailerctl | sh -s
 
 on FreeBSD:
 ```
-fetch -o - https://accio.jailer.dev/jailerctl | sh -s
+fetch -qo - https://accio.jailer.dev/jailerctl | sh -s
 ```
 
 
