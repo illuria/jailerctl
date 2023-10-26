@@ -33,7 +33,7 @@ exit_err(){
 
 if which fetch >/dev/null 2>&1;
 then
-  _fetcher="fetch -o -"
+  _fetcher="fetch -o"
 elif which curl >/dev/null 2>&1;
 then
   _fetcher="curl -sf -o"
