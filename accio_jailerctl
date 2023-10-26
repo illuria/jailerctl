@@ -39,7 +39,7 @@ then
   _fetcher="curl -sf -o"
 elif which wget >/dev/null 2>&1;
 then
-  _fetcher="wget -O"
+  _fetcher="wget -q -O"
 fi
 
 printf "${COLOUR_SET_B}Fetching and Installing "
