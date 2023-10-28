@@ -2,7 +2,8 @@
 
 # set global variables
 PROGNAME=${0##*/}
-VERSION="0.1.3"
+PROGPATH="$(readlink -f $0)"
+VERSION="0.1.4-devel"
 
 COLOUR_SET_R="\033[0;31m"
 COLOUR_SET_G="\033[0;32m"
@@ -60,7 +61,17 @@ remote_add(){
     && printf "Remote ${_remoteName} already exists\n" \
     && exit 1
 
-  ( echo "${_remoteConn} ${_remoteSudo}" >> ~/.jailerctl/remotes/$_remoteName ) \
+  printf "${COLOUR_SET_B}Trying publickey authentication... "
+  ( ssh -q -o PasswordAuthentication=no -o PreferredAuthentications=publickey "${_remoteName}" "exit" \
+    && printf "${COLOUR_SET_G}Done!${COLOUR_END}\n" ) \
+    || ( printf "${COLOUR_SET_Y}Failed!${COLOUR_END}\n"  && \
+  printf "${COLOUR_SET_B}Trying ssh-copy-id... ${COLOUR_SET_W}\n"
+  ( ssh-copy-id "${_remoteName}" >/dev/null \
+    && printf "${COLOUR_SET_G}Done!${COLOUR_END}\n" && remote_add "$@" ) \
+    || ( printf "${COLOUR_SET_R}Failed!${COLOUR_END}\n" ) )
+
+  ( echo "${_remoteConn} ${_remoteSudo}" >> ~/.jailerctl/remotes/$_remoteName \
+    && info_do "${_remoteName}" ) \
     && printf "${COLOUR_SET_G}Done!${COLOUR_END}\n"
 }
 
@@ -99,9 +110,8 @@ list_parse(){
   _remotes=$(ls -tr ~/.jailerctl/remotes/ 2>/dev/null)
   [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
 
-  export -f list_do
   echo "${_remotes}" \
-    | xargs -L1 -P0 sh -c 'list_do "$0"' \
+    | xargs -L1 -P0 ${PROGPATH} list_do \
     | sed -e '1s/^/HOST NAME STATE JID HOSTNAME IPv4 GW\n/' \
     | column -t
 }
@@ -138,11 +148,11 @@ info_parse(){
 
   _remotes=$(ls -tr ~/.jailerctl/remotes/ 2>/dev/null)
   [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
-  export -f info_do
+
   echo "${_remotes}" \
-    | xargs -L1 -P0 sh -c "info_do \$0 > ~/.jailerctl/tmp/\$0"
+    | xargs -L1 -P0 sh -c "${PROGPATH} info_do \$0 > ~/.jailerctl/tmp/\$0"
   echo "${_remotes}" \
-    | xargs -I% -L1 cat ~/.jailerctl/tmp/%
+    | xargs -I% cat ~/.jailerctl/tmp/%
   rm ~/.jailerctl/tmp/*
 }
 
@@ -211,6 +221,9 @@ jailerctl_main(){
     list)       list_parse    "$@" ;;
     run)        run_parse     "$@" ;;
     info)       info_parse    "$@" ;;
+    ## INTERNAL API
+    info_do)    info_do       "$2" ;;
+    list_do)    list_do       "$2" ;;
     *)          help_usage         ;;
   esac
 }
