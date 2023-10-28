@@ -13,8 +13,6 @@ COLOUR_SET_C="\033[0;36m"
 COLOUR_SET_W="\033[0;37m"
 COLOUR_END="\033[0m"
 
-SSH_OPTS="-q -o ConnectTimeout=5 -o ControlPersist=300 -o ControlMaster=yes -o ControlPath=/tmp/jailerctl.${remoteName}.ctl"
-
 help_usage(){
   cat <<EOT
 Usage: jailerctl ...
@@ -25,9 +23,8 @@ Usage: jailerctl ...
     add    RemoteName username@host [sudo]
     remove RemoteName
     rename RemoteName NewRemoteName
-  list
-    [Remote]
-  inspect [Remote]
+  info [Remote]
+  list [Remote]
   run Remote <jailer command>
 EOT
   exit 0
@@ -101,10 +98,7 @@ list_parse(){
   [ "$#" -eq 1 ] && list_do "$1" | sed -e '1s/^/HOST NAME STATE JID HOSTNAME IPv4 GW\n/'| column -t && exit 0
   _remotes=$(ls -tr ~/.jailerctl/remotes/ 2>/dev/null)
   [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
-  for remote in ${_remotes} ;
-  do
-    list_do "$remote"
-  done | sed -e '1s/^/HOST NAME STATE JID HOSTNAME IPv4 GW\n/'| column -t
+
   export -f list_do
   echo "${_remotes}" \
     | xargs -L1 -P0 sh -c 'list_do "$0"' \
@@ -115,7 +109,7 @@ list_parse(){
 list_do(){
   remoteName="$1"
   SSH_OPTS="-q -o ConnectTimeout=5 -o ControlPersist=300 -o ControlMaster=yes -o ControlPath=/tmp/jailerctl.${remoteName}.ctl"
-  ( ssh ${SSH_OPTS}  $(cat ~/.jailerctl/remotes/${remoteName}) jailer list || printf "\nDOWN DOWN DOWN DOWN DOWN DOWN\n" "${remoteName}" ) | sed -e "1d" -e "s/^/${remoteName} /"
+  ( ssh ${SSH_OPTS}  $(cat ~/.jailerctl/remotes/${remoteName}) jailer list || printf "\nEHOSTUNREACH EHOSTUNREACH EHOSTUNREACH EHOSTUNREACH EHOSTUNREACH EHOSTUNREACH\n" "${remoteName}" ) | sed -e "1d" -e "s/^/${remoteName} /"
 }
 
 run_parse(){
@@ -138,24 +132,21 @@ run_do(){
   ssh -q -o ControlPersist=300 -o ControlMaster=yes -o ControlPath=/tmp/jailerctl.${remoteName}.ctl -t $(cat ~/.jailerctl/remotes/${remoteName}) jailer "${jailerRun}"
 }
 
-inspect_parse(){
+info_parse(){
   shift
-  [ ! -z "$1" ] && inspect_do "$1" && exit 0
+  [ ! -z "$1" ] && info_do "$1" && exit 0
 
   _remotes=$(ls -tr ~/.jailerctl/remotes/ 2>/dev/null)
   [ -z "${_remotes}" ] && echo "No remotes available. Use \`${PROGNAME} remote add\` to add remotes" && exit 0
-  for remote in ${_remotes} ;
-  do
-    printf "$remote ->\n"
-    inspect_do "$remote"
-  done
-
-  #export -f inspect_do
-  #echo "${_remotes}" \
-  #  | xargs -L1 -P0 sh -c 'inspect_do "$0"'
+  export -f info_do
+  echo "${_remotes}" \
+    | xargs -L1 -P0 sh -c "info_do \$0 > ~/.jailerctl/tmp/\$0"
+  echo "${_remotes}" \
+    | xargs -I% -L1 cat ~/.jailerctl/tmp/%
+  rm ~/.jailerctl/tmp/*
 }
 
-inspect_do(){
+info_do(){
   remoteName="$1"
   SSH_OPTS="-q -o ConnectTimeout=5 -o ControlPersist=300 -o ControlMaster=yes -o ControlPath=/tmp/jailerctl.${remoteName}.ctl"
 
@@ -165,6 +156,7 @@ inspect_do(){
     && exit 1
 
   ssh ${SSH_OPTS} -t $(cat ~/.jailerctl/remotes/${remoteName} | cut -d ' ' -f 1) '/bin/sh -s' <<EOS
+printf "${remoteName} ->\n"
 printf "  Hostname   : "
 hostname
 
@@ -196,16 +188,21 @@ printf "\${used}/\${size} @ \${mountpoint}\n"
 printf "  Jails      : "
 jls jid | wc -l | cut -w -f 2
 EOS
-if [ "$?" -eq 255 ];
+_ssh_ret="$?"
+if [ "${_ssh_ret}" -eq 255 ];
 then
-  printf " DOWN\n"
+  printf "${remoteName} ->\n  EHOSTUNREACH\n"
+elif [ "${_ssh_ret}" -gt 0 ];
+then
+  printf "${remoteName} ->\n  ERROR\n"
 fi
 }
 
 jailerctl_main(){
   [ $# -eq 0 ] && help_usage
 
-  [ ! -d ~/.jailerctl ] && echo "Creating ~/.jailerctl" && mkdir -p ~/.jailerctl/remotes
+  [ ! -d ~/.jailerctl/remotes ] && echo "Creating ~/.jailerctl/remotes" && mkdir -p ~/.jailerctl/remotes
+  [ ! -d ~/.jailerctl/tmp     ] && echo "Creating ~/.jailerctl/tmp"     && mkdir -p ~/.jailerctl/tmp
 
   case "$1" in
     help)       help_usage         ;;
@@ -213,7 +210,7 @@ jailerctl_main(){
     remote)     remote_parse  "$@" ;;
     list)       list_parse    "$@" ;;
     run)        run_parse     "$@" ;;
-    inspect)    inspect_parse "$@" ;;
+    info)       info_parse    "$@" ;;
     *)          help_usage         ;;
   esac
 }
